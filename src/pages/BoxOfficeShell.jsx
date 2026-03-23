@@ -4577,7 +4577,7 @@ function BoxOfficeShell() {
               </button>
             ))}
           </div>
-          <button className="btn btn-g btn-sm" onClick={() => setCanvasBuilderExpanded(true)} style={{ fontSize: 10, padding: "4px 8px" }} title="Fullscreen Builder"><I n="maximize" s={12} /></button>
+          <button onClick={() => setCanvasBuilderExpanded(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 8, color: "#aaa", fontSize: 12, cursor: "pointer", transition: "all .15s", marginLeft: "auto" }} title="Fullscreen Builder" onMouseEnter={e => { e.currentTarget.style.background = "rgba(96,77,255,.15)"; e.currentTarget.style.borderColor = "rgba(96,77,255,.4)"; e.currentTarget.style.color = "#fff"; }} onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,.1)"; e.currentTarget.style.color = "#aaa"; }}><I n="maximize" s={14} /> <span>Fullscreen</span></button>
         </div>
         <div className="cvs-editor-preview-scroll" style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ width: canvasPreviewDevice === "mobile" ? 375 : canvasPreviewDevice === "tablet" ? 768 : "100%", transition: "width .3s ease", maxWidth: "100%" }}>
