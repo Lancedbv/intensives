@@ -694,7 +694,7 @@ const getTemplateOverrides = (templateId, prog, ts, fp, accent, brand, I, MOCK_O
         <section key="program" className="cvs-anim-section" style={{ padding: "60px 48px", background: ts.bg }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
-              {[{ n: `${durDays}`, l: "DAYS" }, { n: `${prog.capacity}`, l: "SPOTS" }, { n: `${fac.length}`, l: "TEACHERS" }, { n: `${(prog.styles || []).length * 3}+`, l: "CLASSES" }].map((s, i) => (
+              {[{ n: `${durDays}`, l: "DAYS" }, { n: prog.capacity ? `${prog.capacity}` : "\u221E", l: prog.capacity ? "SPOTS" : "OPEN" }, { n: `${fac.length}`, l: "TEACHERS" }, { n: `${(prog.styles || []).length * 3}+`, l: "CLASSES" }].map((s, i) => (
                 <div key={i} className="cvs-anim-card" style={{ textAlign: "center", padding: 24, animationDelay: `${i * 0.1}s` }}>
                   <div style={{ fontSize: 44, fontWeight: 800, color: accent, fontFamily: "'Outfit', system-ui, sans-serif" }}>{s.n}</div>
                   <div style={{ fontSize: 10, letterSpacing: 3, color: ts.muted, fontFamily: ts.monoFont, marginTop: 8 }}>{s.l}</div>
@@ -1859,6 +1859,9 @@ function BoxOfficeShell() {
   const [authEmail, setAuthEmail] = useState("");
   const [authPass, setAuthPass] = useState("");
 
+  // Demo popup
+  const [showDemoPopup, setShowDemoPopup] = useState(true);
+
   // Dark mode
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('lanced-dark-mode') === 'true');
 
@@ -1890,7 +1893,7 @@ function BoxOfficeShell() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(null);
 
   // Forms
-  const [newProg, setNewProg] = useState({ model: "A", name: "", description: "", type: "intensive", location: "", venue: "", startDate: "", endDate: "", applicationDeadline: "", confirmationDeadline: "", capacity: 40, basePrice: "", earlyBirdPrice: "", currency: "EUR", paymentMode: "full" });
+  const [newProg, setNewProg] = useState({ model: "A", name: "", description: "", type: "intensive", location: "", venue: "", startDate: "", endDate: "", applicationDeadline: "", confirmationDeadline: "", capacity: 0, basePrice: "", earlyBirdPrice: "", currency: "EUR", paymentMode: "full" });
 
   // Applicant filters
   const [appSearch, setAppSearch] = useState("");
@@ -2128,7 +2131,10 @@ function BoxOfficeShell() {
     };
     setPrograms(prev => [p, ...prev]);
     setShowNewProgram(false);
-    setNewProg({ model: "A", name: "", description: "", type: "intensive", location: "", venue: "", startDate: "", endDate: "", applicationDeadline: "", confirmationDeadline: "", capacity: 40, basePrice: "", earlyBirdPrice: "", currency: "EUR", paymentMode: "full" });
+    setNewProg({ model: "A", name: "", description: "", type: "intensive", location: "", venue: "", startDate: "", endDate: "", applicationDeadline: "", confirmationDeadline: "", capacity: 0, basePrice: "", earlyBirdPrice: "", currency: "EUR", paymentMode: "full" });
+    openProgram(p);
+    setProgramPage("settings");
+    setProgSettingsTab("general");
     setToast("Program created!");
   };
 
@@ -2889,7 +2895,7 @@ function BoxOfficeShell() {
           <div className="pob-meta" style={{color: (prog.coverImage || prog.bannerGradient) ? "rgba(255,255,255,.8)" : undefined}}>
             <span><I n="calendar" s={14} /> {formatDate(prog.startDate)} - {formatDate(prog.endDate)}</span>
             <span><I n="mapPin" s={14} /> {prog.location}</span>
-            <span><I n="users" s={14} /> {confirmedCount}/{prog.capacity}</span>
+            <span><I n="users" s={14} /> {prog.capacity ? `${confirmedCount}/${prog.capacity}` : "Unlimited spots"}</span>
             {daysLeft !== null && daysLeft > 0 && <span><I n="clock" s={14} /> {daysLeft} days until start</span>}
           </div>
           {prog.basePrice && <div className="pob-price">{formatCurrency(prog.basePrice, prog.currency)}</div>}
@@ -5241,11 +5247,40 @@ function BoxOfficeShell() {
   };
 
   // === PROGRAM SETTINGS ===
+  const getSettingsCompletion = (prog) => {
+    const items = [
+      { id: "general", label: "General Info", done: !!(prog.name && prog.description && prog.startDate && prog.location) },
+      { id: "application", label: "Application Form", done: !!(prog.applicationConfig?.materials?.length > 0 || prog.applicationFields?.length > 0 || prog.model === "C" || prog.model === "B") },
+      { id: "refunds", label: "Refund Policy", done: !!(prog.refundPolicyText || (prog.refundPolicy && prog.refundPolicy.length > 0)) }
+    ];
+    const completed = items.filter(i => i.done).length;
+    return { items, completed, total: items.length, allDone: completed === items.length };
+  };
+
   const renderProgramSettings = (prog) => {
     const tiers = prog.scholarshipTiers || [];
+    const completion = getSettingsCompletion(prog);
     return (
       <div>
         <div className="pg-header"><h1 style={{fontSize:20}}>Settings</h1><p>Configure program details, scholarships, and policies.</p></div>
+        {!completion.allDone && (
+          <div style={{ marginBottom: 24, padding: "16px 20px", background: "rgba(96,77,255,.06)", borderRadius: 12, border: "1px solid rgba(96,77,255,.15)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text)" }}>Setup Progress</span>
+              <span style={{ fontSize: 12, color: "var(--g5)" }}>{completion.completed}/{completion.total} complete</span>
+            </div>
+            <div style={{ height: 6, borderRadius: 3, background: "var(--g2)", overflow: "hidden", marginBottom: 12 }}>
+              <div style={{ height: "100%", borderRadius: 3, background: "#604dff", width: `${(completion.completed / completion.total) * 100}%`, transition: "width .3s ease" }} />
+            </div>
+            <div style={{ display: "flex", gap: 16 }}>
+              {completion.items.map(item => (
+                <button key={item.id} onClick={() => setProgSettingsTab(item.id === "application" ? "application" : item.id)} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontSize: 12, color: item.done ? "#1DB954" : "var(--g5)", padding: 0 }}>
+                  {item.done ? "\u2713" : "\u25CB"} {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{display:"flex",gap:6,marginBottom:24,flexWrap:"wrap"}}>
           {(() => {
             const m = prog.model;
@@ -5288,7 +5323,7 @@ function BoxOfficeShell() {
               <div className="field"><label>Venue</label><input value={prog.venue || ""} readOnly /></div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              <div className="field"><label>Capacity</label><input type="number" value={prog.capacity} readOnly /></div>
+              <div className="field"><label>Capacity</label><input type="number" value={prog.capacity || ""} readOnly placeholder="Leave empty for unlimited" />{(!prog.capacity) && <div style={{fontSize:11,color:"var(--g4)",marginTop:4}}>Unlimited</div>}</div>
               <div className="field"><label>Base Price ({prog.currency})</label><input type="number" value={prog.basePrice} readOnly /></div>
             </div>
             <button className="btn btn-p btn-press" style={{marginTop:16}} onClick={()=>showToastMsg("Settings saved")}>Save Changes</button>
@@ -6289,7 +6324,7 @@ function BoxOfficeShell() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
             <div style={{ padding: "10px 12px", background: "rgba(255,255,255,.04)", borderRadius: 8 }}>
               <div style={{ fontSize: 10, color: "#666", letterSpacing: 1, textTransform: "uppercase" }}>CAPACITY</div>
-              <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>{prog.capacity} spots</div>
+              <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>{prog.capacity ? `${prog.capacity} spots` : "Open enrollment"}</div>
             </div>
             <div style={{ padding: "10px 12px", background: "rgba(255,255,255,.04)", borderRadius: 8 }}>
               <div style={{ fontSize: 10, color: "#666", letterSpacing: 1, textTransform: "uppercase" }}>LEVEL</div>
@@ -6410,7 +6445,7 @@ function BoxOfficeShell() {
             <div className="pub-info-grid">
               <div className="pub-info-item"><I n="calendar" s={16} /> <strong>Dates:</strong> {formatDate(prog.startDate)} - {formatDate(prog.endDate)}</div>
               <div className="pub-info-item"><I n="mapPin" s={16} /> <strong>Location:</strong> {prog.location}</div>
-              <div className="pub-info-item"><I n="users" s={16} /> <strong>Capacity:</strong> {prog.capacity} spots</div>
+              <div className="pub-info-item"><I n="users" s={16} /> <strong>Capacity:</strong> {prog.capacity ? `${prog.capacity} spots` : "Open enrollment"}</div>
               {prog.basePrice && <div className="pub-info-item"><I n="dollar" s={16} /> <strong>Price:</strong> {formatCurrency(prog.basePrice, prog.currency)}</div>}
               {prog.level && <div className="pub-info-item"><I n="award" s={16} /> <strong>Level:</strong> {prog.level}</div>}
               {prog.styles && prog.styles.length > 0 && <div className="pub-info-item"><I n="tag" s={16} /> <strong>Styles:</strong> {prog.styles.join(", ")}</div>}
@@ -7078,7 +7113,7 @@ function BoxOfficeShell() {
           </div>
         )}
         <div className="field-row-3">
-          <div className="field"><label>Capacity</label><input type="number" value={newProg.capacity} onChange={e=>setNewProg(p=>({...p,capacity:parseInt(e.target.value)||0}))} /></div>
+          <div className="field"><label>Capacity</label><input type="number" value={newProg.capacity || ""} onChange={e=>setNewProg(p=>({...p,capacity:e.target.value===""?0:parseInt(e.target.value)||0}))} placeholder="Leave empty for unlimited" /><div style={{fontSize:11,color:"var(--g4)",marginTop:4}}>Leave empty if spots are unlimited or not applicable</div></div>
           <div className="field"><label>Price ({newProg.currency})</label><input type="number" value={newProg.basePrice} onChange={e=>setNewProg(p=>({...p,basePrice:e.target.value}))} placeholder="0" /></div>
           <div className="field">
             <label>Currency</label>
@@ -7312,6 +7347,38 @@ function BoxOfficeShell() {
         </main>
 
         {renderMobileNav()}
+
+        {showDemoPopup && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.7)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
+            <div style={{ background: "var(--card)", borderRadius: 24, padding: "40px 36px", maxWidth: 520, width: "100%", textAlign: "center", border: "1px solid var(--border)", position: "relative" }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #604dff, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 24, fontWeight: 700, color: "#fff" }}>S</div>
+              <div style={{ display: "inline-block", padding: "4px 14px", background: "rgba(96,77,255,.12)", borderRadius: 20, fontSize: 11, fontWeight: 600, color: "#604dff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>DA VINCI UPDATE</div>
+              <h2 style={{ fontSize: 24, fontWeight: 300, margin: "0 0 16px", lineHeight: 1.3 }}>Welcome to Lanced Programs</h2>
+              <p style={{ fontSize: 14, color: "var(--g5)", lineHeight: 1.7, margin: "0 0 8px" }}>
+                This is a demo of <strong style={{ color: "var(--text)" }}>Lanced Programs</strong> — scheduled to launch <strong style={{ color: "var(--text)" }}>September 1st</strong> for next season.
+              </p>
+              <p style={{ fontSize: 14, color: "var(--g5)", lineHeight: 1.7, margin: "0 0 20px" }}>
+                Programs are part of our Da Vinci update and will allow you to sell any educational program on the platform including intensives, workshops, masterclasses, and many more.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 24, textAlign: "left" }}>
+                {["Selection Process", "Scholarships", "Custom Page Builder", "Integrated Payments", "Automated Invoicing", "Workshop Catalog"].map(f => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--g5)", padding: "6px 0" }}>
+                    <span style={{ color: "#604dff" }}>{"\u2713"}</span> {f}
+                  </div>
+                ))}
+              </div>
+              <div style={{ padding: "14px 16px", background: "rgba(255,255,255,.03)", borderRadius: 12, marginBottom: 24, border: "1px solid var(--border)" }}>
+                <p style={{ fontSize: 13, color: "var(--g5)", margin: 0 }}>
+                  Interested in using Lanced Programs next season? Write us at{" "}
+                  <a href="mailto:wouter@lanced.app" style={{ color: "#604dff", textDecoration: "none", fontWeight: 600 }}>wouter@lanced.app</a>
+                </p>
+              </div>
+              <button onClick={() => setShowDemoPopup(false)} style={{ width: "100%", padding: "14px", background: "#604dff", color: "#fff", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                Explore the Demo
+              </button>
+            </div>
+          </div>
+        )}
 
         {showNewProgram && renderNewProgramModal()}
         {showShareModal && renderShareModal()}
