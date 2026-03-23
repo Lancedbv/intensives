@@ -1757,6 +1757,60 @@ a{color:inherit;text-decoration:none}
 
 /* Applicant cards staggered entrance */
 .app-card-enter{animation:scaleIn .3s ease-out backwards}
+
+/* ========== RESPONSIVE: Tablet / Mobile ========== */
+@media (max-width: 768px) {
+  /* Sidebar becomes bottom nav */
+  .sidebar { width: 100% !important; height: auto !important; position: fixed !important; bottom: 0 !important; top: auto !important; flex-direction: row !important; z-index: 100 !important; padding: 8px 0 !important; }
+  .sidebar nav { flex-direction: row !important; justify-content: space-around !important; width: 100% !important; }
+  .sidebar nav button { flex-direction: column !important; font-size: 10px !important; padding: 6px 0 !important; }
+  .sidebar .sidebar-bottom { display: none !important; }
+
+  /* Main content */
+  .main-content, .main, main.main { margin-left: 0 !important; padding-bottom: 70px !important; }
+
+  /* Program cards grid */
+  .prog-card { margin: 0 12px 16px !important; }
+
+  /* Stat grid */
+  .stat-grid { grid-template-columns: 1fr 1fr !important; }
+
+  /* Applicant filters */
+  .app-filters { flex-wrap: wrap !important; gap: 6px !important; }
+  .app-filters .chip { font-size: 11px !important; padding: 4px 10px !important; }
+
+  /* Canvas builder */
+  .cvs-builder, .cvs-editor { flex-direction: column !important; }
+  .cvs-builder > div:first-child, .cvs-editor > div:first-child { width: 100% !important; max-height: 300px !important; overflow-y: auto !important; }
+
+  /* Settings */
+  .settings-grid { grid-template-columns: 1fr !important; }
+
+  /* Workshop catalog cards */
+  [style*="gridTemplateColumns: repeat(auto-fill, minmax(340px"] { grid-template-columns: 1fr !important; }
+
+  /* Participant table */
+  .participant-row { flex-wrap: wrap !important; }
+
+  /* Payment methods grid */
+  [style*="gridTemplateColumns: repeat(4"] { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Model selector */
+  .model-select, .cvs-mode-selector { grid-template-columns: 1fr 1fr !important; }
+
+  /* Share modal */
+  .share-modal { width: 95vw !important; max-width: none !important; }
+
+  /* Header breadcrumbs */
+  .content-header { flex-wrap: wrap !important; gap: 8px !important; }
+}
+
+/* ========== RESPONSIVE: Small Mobile ========== */
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr !important; }
+  .model-select, .cvs-mode-selector { grid-template-columns: 1fr !important; }
+  [style*="gridTemplateColumns: repeat(2"] { grid-template-columns: 1fr !important; }
+}
 `;
 
 // ============================================================
@@ -1893,6 +1947,8 @@ function BoxOfficeShell() {
   const [canvasDomainVerified, setCanvasDomainVerified] = useState(false);
   const [canvasFullscreen, setCanvasFullscreen] = useState(false);
   const [canvasBuilderExpanded, setCanvasBuilderExpanded] = useState(false);
+  const [shareTab, setShareTab] = useState("link");
+  const [embedSize, setEmbedSize] = useState("medium");
   const [newFaculty, setNewFaculty] = useState({ name: "", role: "", bio: "", photo: "" });
   const [editFaculty, setEditFaculty] = useState(null);
 
@@ -2524,7 +2580,7 @@ function BoxOfficeShell() {
                   <tr key={app.id} style={{cursor:"pointer"}} onClick={()=>{if(prog) openProgram(prog); setProgramPage("applicants");}}>
                     <td>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
-                        <div className="roster-avatar">{app.headshot ? <img src={app.headshot} style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover"}} /> : getInitials(app.name)}</div>
+                        <div className="roster-avatar">{app.headshot ? <img src={app.headshot} alt="" style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover"}} /> : getInitials(app.name)}</div>
                         <div><div style={{fontWeight:600}}>{app.name}</div><div style={{fontSize:11,color:"var(--g4)"}}>{app.email}</div></div>
                       </div>
                     </td>
@@ -2994,7 +3050,7 @@ function BoxOfficeShell() {
             {/* Headshot - NO number badge */}
             <div style={{ borderRadius: 12, overflow: "hidden", position: "relative", paddingBottom: "133%", background: "#2a2a3e" }}>
               {liveApp.headshot ? (
-                <img src={liveApp.headshot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={liveApp.headshot} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48, fontWeight: 300, color: "#666" }}>{getInitials(app.name)}</div>
               )}
@@ -3368,7 +3424,7 @@ function BoxOfficeShell() {
                 {/* Image area - 3:4 aspect ratio */}
                 <div style={{ paddingBottom: "133%", position: "relative", background: "#2a2a3e" }}>
                   {app.headshot ? (
-                    <img src={app.headshot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={app.headshot} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 300, color: "#666" }}>{app.name.charAt(0)}</div>
                   )}
@@ -3403,7 +3459,7 @@ function BoxOfficeShell() {
               <div key={app.id} onClick={() => setReviewingApp(app)} style={{ display: "grid", gridTemplateColumns: "40px 40px 1fr 70px 100px 80px 100px 90px", gap: 8, padding: "10px 16px", alignItems: "center", cursor: "pointer", borderBottom: "1px solid rgba(255,255,255,.03)", transition: "background .15s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,.03)"} onMouseLeave={e => e.currentTarget.style.background = ""}>
                 <span style={{ fontSize: 11, color: "var(--g4)" }}>{i + 1}</span>
                 <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#2a2a3e", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 500, color: "#666", flexShrink: 0 }}>
-                  {app.headshot ? <img src={app.headshot} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : app.name.charAt(0)}
+                  {app.headshot ? <img src={app.headshot} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : app.name.charAt(0)}
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "var(--tx)" }}>{app.name}</div>
@@ -3462,7 +3518,7 @@ function BoxOfficeShell() {
                 <div key={pt.id} className="part-card">
                   <div className="part-row" style={(prog.model === "A" && (prog.weeks || []).length > 0) ? {gridTemplateColumns:"1fr 100px 100px 100px 140px 100px 180px"} : undefined} onClick={()=>setExpandedParticipant(isExpanded ? null : pt.id)}>
                     <div className="part-info">
-                      <div className="roster-avatar">{(() => { const ptApp = applications.find(a => a.name === pt.name); return ptApp?.headshot ? <img src={ptApp.headshot} style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover"}} /> : getInitials(pt.name); })()}</div>
+                      <div className="roster-avatar">{(() => { const ptApp = applications.find(a => a.name === pt.name); return ptApp?.headshot ? <img src={ptApp.headshot} alt="" style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover"}} /> : getInitials(pt.name); })()}</div>
                       <div>
                         <div style={{fontWeight:600}}>{pt.name}</div>
                         <div style={{fontSize:11,color:"var(--g4)"}}>{pt.email}</div>
@@ -4521,7 +4577,7 @@ function BoxOfficeShell() {
               </button>
             ))}
           </div>
-          <button className="btn btn-g btn-sm" onClick={() => setCanvasFullscreen(true)} style={{ fontSize: 10, padding: "4px 8px" }} title="Fullscreen preview"><I n="externalLink" s={12} /></button>
+          <button className="btn btn-g btn-sm" onClick={() => setCanvasBuilderExpanded(true)} style={{ fontSize: 10, padding: "4px 8px" }} title="Fullscreen Builder"><I n="maximize" s={12} /></button>
         </div>
         <div className="cvs-editor-preview-scroll" style={{ display: "flex", justifyContent: "center" }}>
           <div style={{ width: canvasPreviewDevice === "mobile" ? 375 : canvasPreviewDevice === "tablet" ? 768 : "100%", transition: "width .3s ease", maxWidth: "100%" }}>
@@ -4942,10 +4998,7 @@ function BoxOfficeShell() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, position: "absolute", top: 12, right: 12, zIndex: 10 }}>
-          <button onClick={() => setCanvasFullscreen(true)} style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)", color: "#ccc", padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-            <I n="maximize" s={14} /> Full Screen
-          </button>
-          <button onClick={() => { setPublicView(viewProgram.id); setArtistView(null); }} style={{ background: "#604dff", color: "#fff", border: "none", padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => setCanvasFullscreen(true)} style={{ background: "#604dff", color: "#fff", border: "none", padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
             <I n="eye" s={14} /> Live Preview
           </button>
         </div>
@@ -5155,6 +5208,12 @@ function BoxOfficeShell() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="settings-section anim-fade-up">
+              <h3>Embed Widget</h3>
+              <p className="ss-sub">Add a promotional card to your website with a simple embed code.</p>
+              {renderEmbedCodeGenerator(prog.id, true)}
             </div>
 
             <div className="settings-section anim-fade-up">
@@ -6174,11 +6233,134 @@ function BoxOfficeShell() {
     return <Tag style={style} className={className}>{value}</Tag>;
   };
 
+  // === RENDER: EMBED WIDGET ===
+  const renderEmbedWidget = (prog) => {
+    const materials = prog.applicationForm?.materials || prog.applicationFields || [];
+    const materialLabels = {
+      headshot: { icon: "camera", label: "Headshot Photo" },
+      dance_reel: { icon: "eye", label: "Dance Reel / Video" },
+      cv: { icon: "edit", label: "CV / Resume" },
+      motivation_letter: { icon: "mail", label: "Motivation Letter" },
+      portfolio: { icon: "image", label: "Portfolio / Photos" },
+      medical_form: { icon: "heart", label: "Medical Form" },
+      references: { icon: "users", label: "References" },
+      experience_level: { icon: "zap", label: "Experience Level" }
+    };
+
+    return (
+      <div style={{ fontFamily: "'Inter', -apple-system, sans-serif", background: "#0d0d12", color: "#fff", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+        {/* Banner */}
+        <div style={{ height: 140, background: prog.coverImage ? `url(${prog.coverImage}) center/cover` : (prog.bannerGradient || "linear-gradient(135deg, #1a1a2e, #604dff)"), position: "relative" }}>
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 40%, rgba(13,13,18,.9))" }} />
+          <div style={{ position: "absolute", bottom: 12, left: 16, right: 16 }}>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>{prog.name}</div>
+            <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{prog.location} · {formatDate(prog.startDate)} — {formatDate(prog.endDate)}</div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div style={{ padding: "20px 16px", flex: 1 }}>
+          {/* Price */}
+          {prog.basePrice > 0 && (
+            <div style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>
+              Starting from <span style={{ color: "#fff", fontWeight: 600, fontSize: 16 }}>{formatCurrency(prog.basePrice, prog.currency)}</span>
+            </div>
+          )}
+
+          {/* What you'll need */}
+          {materials.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, letterSpacing: 2, color: "#666", textTransform: "uppercase", marginBottom: 10 }}>WHAT YOU'LL NEED</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {materials.filter(m => typeof m === "string").map(m => {
+                  const info = materialLabels[m] || { icon: "file", label: m };
+                  return (
+                    <div key={m} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "rgba(96,77,255,.1)", borderRadius: 8, fontSize: 12, color: "#ccc" }}>
+                      <I n={info.icon} s={14} />
+                      {info.label}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Key info */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
+            <div style={{ padding: "10px 12px", background: "rgba(255,255,255,.04)", borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: "#666", letterSpacing: 1, textTransform: "uppercase" }}>CAPACITY</div>
+              <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>{prog.capacity} spots</div>
+            </div>
+            <div style={{ padding: "10px 12px", background: "rgba(255,255,255,.04)", borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: "#666", letterSpacing: 1, textTransform: "uppercase" }}>LEVEL</div>
+              <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>{prog.level || "All Levels"}</div>
+            </div>
+          </div>
+
+          {/* Deadline */}
+          {prog.applicationDeadline && (
+            <div style={{ fontSize: 12, color: "#FF4757", marginBottom: 16 }}>
+              Application deadline: {formatDate(prog.applicationDeadline)}
+            </div>
+          )}
+        </div>
+
+        {/* CTA */}
+        <div style={{ padding: "0 16px 16px" }}>
+          <a href={`https://store.lanced.com/program/${prog.id}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "#604dff", color: "#fff", textAlign: "center", padding: "14px", borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>
+            {prog.model === "A" || prog.model === "D" ? "Apply on Lanced \u2192" : prog.model === "C" ? "Buy Tickets on Lanced \u2192" : "Register on Lanced \u2192"}
+          </a>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "8px 16px 12px", textAlign: "center" }}>
+          <span style={{ fontSize: 10, color: "#444" }}>powered by </span>
+          <span style={{ fontSize: 10, color: "#604dff", fontWeight: 600 }}>Lanced</span>
+        </div>
+      </div>
+    );
+  };
+
+  // === RENDER: EMBED CODE GENERATOR ===
+  const renderEmbedCodeGenerator = (progId, showPreview) => {
+    const embedSizes = { small: { w: 320, h: 480 }, medium: { w: 400, h: 520 }, large: { w: 500, h: 600 } };
+    const sz = embedSizes[embedSize] || embedSizes.medium;
+    const embedUrl = `https://store.lanced.com/embed/${progId}`;
+    const embedCode = `<iframe src="${embedUrl}" width="${sz.w}" height="${sz.h}" frameborder="0" style="border-radius:16px;overflow:hidden;"></iframe>`;
+
+    return (
+      <div>
+        <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+          {Object.entries(embedSizes).map(([key, val]) => (
+            <button key={key} className={`chip ${embedSize === key ? "on" : ""}`} onClick={() => setEmbedSize(key)} style={{ fontSize: 11, textTransform: "capitalize" }}>
+              {key} ({val.w}x{val.h})
+            </button>
+          ))}
+        </div>
+        <div style={{ background: "var(--g1)", borderRadius: 10, padding: 12, fontFamily: "var(--mono)", fontSize: 11, color: "var(--g5)", overflowX: "auto", marginBottom: 12, position: "relative" }}>
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{embedCode}</pre>
+          <button className="btn btn-p btn-sm btn-press" style={{ position: "absolute", top: 8, right: 8, fontSize: 10 }} onClick={() => { navigator.clipboard.writeText(embedCode).catch(() => {}); showToastMsg("Embed code copied!"); }}>
+            <I n="copy" s={12} /> Copy
+          </button>
+        </div>
+        {showPreview && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--g6)", marginBottom: 8 }}>Preview</div>
+            <div style={{ width: sz.w, maxWidth: "100%", height: sz.h, borderRadius: 16, overflow: "hidden", border: "1px solid var(--g2)", background: "#0d0d12" }}>
+              {renderEmbedWidget(programs.find(p => p.id === progId) || programs[0])}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // === RENDER: PUBLIC VIEW ===
   const renderPublicView = () => {
     const prog = programs.find(p => p.id === publicView);
     if (!prog) return <div style={{padding:40,textAlign:"center"}}>Program not found. <button className="btn btn-p btn-press" onClick={()=>{setPublicView(null);setArtistView(null);}}>Go Back</button></div>;
 
+    if (artistView === "embed") return renderEmbedWidget(prog);
     if (artistView === "catalog") return renderPublicCatalog(prog);
     if (artistView === "workshop-detail") return renderPublicWorkshopDetail(prog);
     if (artistView === "cart") return renderPublicCart(prog);
@@ -6918,23 +7100,31 @@ function BoxOfficeShell() {
   const renderShareModal = () => {
     const shareUrl = `https://store.lanced.com/p/${viewProgram?.id || "demo"}`;
     return (
-      <div className="overlay modal-enter" onClick={()=>setShowShareModal(false)}>
-        <div className="share-modal" onClick={e=>e.stopPropagation()}>
+      <div className="overlay modal-enter" onClick={()=>{setShowShareModal(false);setShareTab("link");}}>
+        <div className="share-modal" onClick={e=>e.stopPropagation()} style={{ maxWidth: 560 }}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <h2 style={{fontFamily:"var(--serif)",fontSize:22,fontWeight:400}}>Share Program</h2>
-            <button className="btn btn-g" onClick={()=>setShowShareModal(false)}><I n="x" s={18} /></button>
+            <button className="btn btn-g" onClick={()=>{setShowShareModal(false);setShareTab("link");}}><I n="x" s={18} /></button>
           </div>
-          <div style={{fontSize:13,color:"var(--g5)",marginBottom:12}}>Share this link with artists to view and apply to your program.</div>
-          <div className="share-link-box">
-            <input readOnly value={shareUrl} />
-            <button className="btn btn-p btn-sm btn-press" onClick={()=>{navigator.clipboard.writeText(shareUrl).catch(()=>{});setToast("Link copied!");}}><I n="copy" s={14} /> Copy</button>
+          <div style={{display:"flex",gap:6,marginBottom:16}}>
+            <button className={`chip ${shareTab === "link" ? "on" : ""}`} onClick={() => setShareTab("link")}><I n="link" s={12} /> Link</button>
+            <button className={`chip ${shareTab === "embed" ? "on" : ""}`} onClick={() => setShareTab("embed")}><I n="code" s={12} /> Embed</button>
           </div>
-          <div style={{marginTop:20}}>
-            <div style={{fontSize:12,fontWeight:600,color:"var(--g6)",marginBottom:8}}>Embed Code</div>
-            <div style={{background:"var(--g1)",borderRadius:10,padding:12,fontFamily:"var(--mono)",fontSize:11,color:"var(--g5)",overflowX:"auto"}}>
-              {`<iframe src="${shareUrl}" width="100%" height="600" frameborder="0"></iframe>`}
+          {shareTab === "link" && (
+            <div>
+              <div style={{fontSize:13,color:"var(--g5)",marginBottom:12}}>Share this link with artists to view and apply to your program.</div>
+              <div className="share-link-box">
+                <input readOnly value={shareUrl} />
+                <button className="btn btn-p btn-sm btn-press" onClick={()=>{navigator.clipboard.writeText(shareUrl).catch(()=>{});setToast("Link copied!");}}><I n="copy" s={14} /> Copy</button>
+              </div>
             </div>
-          </div>
+          )}
+          {shareTab === "embed" && (
+            <div>
+              <div style={{fontSize:13,color:"var(--g5)",marginBottom:12}}>Embed a promotional card on your website.</div>
+              {renderEmbedCodeGenerator(viewProgram?.id || "demo", true)}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -6948,7 +7138,7 @@ function BoxOfficeShell() {
       <div className="overlay modal-enter" onClick={()=>setShowApplicantDetail(null)}>
         <div className="app-detail" onClick={e=>e.stopPropagation()}>
           <div className="app-detail-header">
-            <div className="app-detail-avatar">{app.headshot ? <img src={app.headshot} style={{width:80,height:80,borderRadius:16,objectFit:"cover"}} /> : getInitials(app.name)}</div>
+            <div className="app-detail-avatar">{app.headshot ? <img src={app.headshot} alt="" style={{width:80,height:80,borderRadius:16,objectFit:"cover"}} /> : getInitials(app.name)}</div>
             <div className="app-detail-info">
               <h2>{app.name}</h2>
               <div className="app-detail-meta">
