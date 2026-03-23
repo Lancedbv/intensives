@@ -7350,25 +7350,25 @@ function BoxOfficeShell() {
 
         {showDemoPopup && (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.7)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
-            <div style={{ background: "var(--card)", borderRadius: 24, padding: "40px 36px", maxWidth: 520, width: "100%", textAlign: "center", border: "1px solid var(--border)", position: "relative" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #604dff, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 24, fontWeight: 700, color: "#fff" }}>S</div>
-              <div style={{ display: "inline-block", padding: "4px 14px", background: "rgba(96,77,255,.12)", borderRadius: 20, fontSize: 11, fontWeight: 600, color: "#604dff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>DA VINCI UPDATE</div>
-              <h2 style={{ fontSize: 24, fontWeight: 300, margin: "0 0 16px", lineHeight: 1.3 }}>Welcome to Lanced Programs</h2>
-              <p style={{ fontSize: 14, color: "var(--g5)", lineHeight: 1.7, margin: "0 0 8px" }}>
-                This is a demo of <strong style={{ color: "var(--text)" }}>Lanced Programs</strong> — scheduled to launch <strong style={{ color: "var(--text)" }}>September 1st</strong> for next season.
+            <div style={{ background: "#1a1a2e", borderRadius: 24, padding: "40px 36px", maxWidth: 520, width: "100%", textAlign: "center", border: "1px solid #2a2a3e", position: "relative", color: "#fff" }}>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #604dff, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 24, fontWeight: 700, color: "#fff" }}>L</div>
+              <div style={{ display: "inline-block", padding: "4px 14px", background: "rgba(96,77,255,.15)", borderRadius: 20, fontSize: 11, fontWeight: 600, color: "#a78bfa", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>DA VINCI UPDATE</div>
+              <h2 style={{ fontSize: 24, fontWeight: 300, margin: "0 0 16px", lineHeight: 1.3, color: "#fff" }}>Welcome to Lanced Programs</h2>
+              <p style={{ fontSize: 14, color: "#b0b0c0", lineHeight: 1.7, margin: "0 0 8px" }}>
+                This is a demo of <strong style={{ color: "#fff" }}>Lanced Programs</strong> — scheduled to launch <strong style={{ color: "#fff" }}>September 1st</strong> for next season.
               </p>
-              <p style={{ fontSize: 14, color: "var(--g5)", lineHeight: 1.7, margin: "0 0 20px" }}>
+              <p style={{ fontSize: 14, color: "#b0b0c0", lineHeight: 1.7, margin: "0 0 20px" }}>
                 Programs are part of our Da Vinci update and will allow you to sell any educational program on the platform including intensives, workshops, masterclasses, and many more.
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 24, textAlign: "left" }}>
                 {["Selection Process", "Scholarships", "Custom Page Builder", "Integrated Payments", "Automated Invoicing", "Workshop Catalog"].map(f => (
-                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--g5)", padding: "6px 0" }}>
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#ccc", padding: "6px 0" }}>
                     <span style={{ color: "#604dff" }}>{"\u2713"}</span> {f}
                   </div>
                 ))}
               </div>
-              <div style={{ padding: "14px 16px", background: "rgba(255,255,255,.03)", borderRadius: 12, marginBottom: 24, border: "1px solid var(--border)" }}>
-                <p style={{ fontSize: 13, color: "var(--g5)", margin: 0 }}>
+              <div style={{ padding: "14px 16px", background: "rgba(255,255,255,.05)", borderRadius: 12, marginBottom: 24, border: "1px solid #2a2a3e" }}>
+                <p style={{ fontSize: 13, color: "#b0b0c0", margin: 0 }}>
                   Interested in using Lanced Programs next season? Write us at{" "}
                   <a href="mailto:wouter@lanced.app" style={{ color: "#604dff", textDecoration: "none", fontWeight: 600 }}>wouter@lanced.app</a>
                 </p>
