@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import UniversalAuth from "./UniversalAuth";
 
 // ============================================================
 // MOCK DATA
@@ -2212,31 +2213,7 @@ function BoxOfficeShell() {
 
   // === RENDER: AUTH ===
   const renderAuth = () => (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">S</div>
-        {auth === "login" ? (
-          <>
-            <h2>Welcome back</h2>
-            <p className="auth-sub">Sign in to your store dashboard</p>
-            <input type="email" placeholder="Email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} />
-            <input type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)} />
-            <button className="auth-btn" onClick={() => setAuth("app")}>Sign In</button>
-            <p className="auth-switch">Don't have an account? <a onClick={() => setAuth("signup")}>Create one</a></p>
-          </>
-        ) : (
-          <>
-            <h2>Create your account</h2>
-            <p className="auth-sub">Set up your organization on Lanced Store</p>
-            <input type="text" placeholder="Organization name" value={authName} onChange={e => setAuthName(e.target.value)} />
-            <input type="email" placeholder="Email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} />
-            <input type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)} />
-            <button className="auth-btn" onClick={() => setAuth("app")}>Create Account</button>
-            <p className="auth-switch">Already have an account? <a onClick={() => setAuth("login")}>Sign in</a></p>
-          </>
-        )}
-      </div>
-    </div>
+    <UniversalAuth onAuth={() => setAuth("app")} />
   );
 
   // === RENDER: SIDEBAR ===
